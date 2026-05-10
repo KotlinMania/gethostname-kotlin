@@ -4,9 +4,9 @@
 [![Maven Central](https://img.shields.io/maven-central/v/io.github.kotlinmania/gethostname-kotlin)](https://central.sonatype.com/artifact/io.github.kotlinmania/gethostname-kotlin)
 [![Build status](https://img.shields.io/github/actions/workflow/status/KotlinMania/gethostname-kotlin/ci.yml?branch=main)](https://github.com/KotlinMania/gethostname-kotlin/actions)
 
-This is a Kotlin Multiplatform line-by-line transliteration port of [`upstream/gethostname`](https://codeberg.org/swsnr/gethostname.rs.git).
+This is a Kotlin Multiplatform line-by-line transliteration port of the [`gethostname`](https://crates.io/crates/gethostname) Rust crate.
 
-**Original Project:** This port is based on [`upstream/gethostname`](https://codeberg.org/swsnr/gethostname.rs.git). All design credit and project intent belong to the upstream authors; this repository is a faithful port to Kotlin Multiplatform with no behavioural changes intended.
+**Original Project:** This port is based on the [`gethostname`](https://crates.io/crates/gethostname) Rust crate. All design credit and project intent belong to the upstream authors; this repository is a faithful port to Kotlin Multiplatform with no behavioural changes intended.
 
 ### Porting status
 
@@ -47,11 +47,11 @@ See [AGENTS.md](AGENTS.md) and [CLAUDE.md](CLAUDE.md) for translator discipline,
 
 ### License
 
-This Kotlin port is distributed under the same Apache-2.0 license as the upstream [`upstream/gethostname`](https://codeberg.org/swsnr/gethostname.rs.git). See [LICENSE](LICENSE) (and any sibling `LICENSE-*` / `NOTICE` files mirrored from upstream) for the full text.
+This Kotlin port is distributed under the same Apache-2.0 license as the upstream [`gethostname`](https://crates.io/crates/gethostname) Rust crate. See [LICENSE](LICENSE) (and any sibling `LICENSE-*` / `NOTICE` files mirrored from upstream) for the full text.
 
 Original work copyrighted by the gethostname authors.  
 Kotlin port: Copyright (c) 2026 Sydney Renee and The Solace Project.
 
 ### Acknowledgments
 
-Thanks to the [`upstream/gethostname`](https://codeberg.org/swsnr/gethostname.rs.git) maintainers and contributors for the original Rust implementation. This port reproduces their work in Kotlin Multiplatform; bug reports about upstream design or behavior should go to the upstream repository.
+Thanks to the [`gethostname`](https://crates.io/crates/gethostname) crate maintainers and contributors for the original Rust implementation. This port reproduces their work in Kotlin Multiplatform; bug reports about upstream design or behavior should go to the upstream repository.

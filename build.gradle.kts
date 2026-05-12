@@ -101,6 +101,12 @@ kotlin {
         }
 
         val commonTest by getting { dependencies { implementation(kotlin("test")) } }
+
+        val posixMainPath = "src/posixMain/kotlin"
+        val linuxX64Main by getting { kotlin.srcDir(posixMainPath) }
+        val macosArm64Main by getting { kotlin.srcDir(posixMainPath) }
+        val iosArm64Main by getting { kotlin.srcDir(posixMainPath) }
+        val iosSimulatorArm64Main by getting { kotlin.srcDir(posixMainPath) }
     }
     jvmToolchain(21)
 }
@@ -123,11 +129,10 @@ rootProject.extensions.configure<WasmYarnRootEnvSpec>("kotlinWasmYarnSpec") {
 
 rootProject.extensions.configure<YarnRootExtension>("kotlinYarn") {
     resolution("diff", "8.0.3")
-    resolution("serialize-javascript", "7.0.5")
-    resolution("webpack", "5.106.2")
-
     resolution("**/diff", "8.0.3")
+    resolution("serialize-javascript", "7.0.5")
     resolution("**/serialize-javascript", "7.0.5")
+    resolution("webpack", "5.106.2")
     resolution("**/webpack", "5.106.2")
     resolution("follow-redirects", "1.16.0")
     resolution("**/follow-redirects", "1.16.0")
@@ -169,7 +174,7 @@ mavenPublishing {
 
     pom {
         name.set("gethostname-kotlin")
-        description.set("Kotlin Multiplatform port of the Rust crate `gethostname` — Cross-platform `gethostname()`")
+        description.set("Kotlin Multiplatform port of the Rust crate `gethostname` - gethostname for all platforms")
         inceptionYear.set("2026")
         url.set("https://github.com/KotlinMania/gethostname-kotlin")
 
@@ -196,4 +201,18 @@ mavenPublishing {
             developerConnection.set("scm:git:ssh://github.com/KotlinMania/gethostname-kotlin.git")
         }
     }
+}
+
+tasks.register("test") {
+    group = "verification"
+    description =
+        "Runs a portable test suite (macOS + JS + WasmJS). Android and non-host native targets are intentionally excluded."
+
+    val defaultTestTasks = listOf(
+        "macosArm64Test",
+        "jsNodeTest",
+        "wasmJsNodeTest",
+    )
+
+    dependsOn(defaultTestTasks.mapNotNull { taskName -> tasks.findByName(taskName) })
 }

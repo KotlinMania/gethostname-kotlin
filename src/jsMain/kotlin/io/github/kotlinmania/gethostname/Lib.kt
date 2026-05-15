@@ -8,12 +8,13 @@ private fun nodeHostname(): String {
     // Dynamically require the os module at runtime (not compile time).
     // This avoids webpack trying to bundle it for browser targets.
     val nodeOs = js("require('os')")
-    return nodeOs.hostname() as String
+    return nodeOs.hostname().toString()
 }
 
 private fun browserHostnameOrNull(): String? =
-    if (js("typeof window !== 'undefined' && window.location && window.location.hostname") as Boolean) {
-        js("window.location.hostname") as String
+    if (js("typeof window !== 'undefined' && !!(window.location && window.location.hostname)") as Boolean) {
+        val hostname = js("window.location.hostname")
+        hostname?.toString()
     } else {
         null
     }

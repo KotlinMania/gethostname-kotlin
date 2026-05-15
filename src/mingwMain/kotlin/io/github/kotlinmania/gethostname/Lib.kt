@@ -38,7 +38,7 @@ public actual fun gethostname(): String = memScoped {
     ) {
         throw RuntimeException(
             "GetComputerNameExW failed to read hostname.\n" +
-                "        Please report this issue to <https://codeberg.org/swsnr/gethostname.rs/issues>!",
+                "        Please report this issue to <https://github.com/KotlinMania/gethostname-kotlin/issues>!",
         )
     }
 

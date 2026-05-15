@@ -30,8 +30,8 @@ package io.github.kotlinmania.gethostname
 /**
  * Get the standard host name for the current machine.
  *
- * On Unix call the platform's `uname()` to obtain the node name; this matches the upstream Rust
- * [`rustix::system::Uname::nodename`] semantics.
+ * On Unix call the platform's `uname()` to obtain the node name; this matches the node name
+ * field semantics from the POSIX `utsname` structure.
  *
  * On Windows return the DNS host name of the local computer, as returned by
  * [GetComputerNameExW] with `ComputerNamePhysicalDnsHostname` as `NameType`. We call this function

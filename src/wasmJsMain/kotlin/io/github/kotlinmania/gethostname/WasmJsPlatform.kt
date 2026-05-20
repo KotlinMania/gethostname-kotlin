@@ -1,4 +1,4 @@
-// port-lint: source src/lib.rs (platform glue, Wasm-JS target via Node `os.hostname()`)
+// port-lint: ignore platform actual for the Wasm-JS target glue in src/lib.rs
 @file:OptIn(kotlin.js.ExperimentalWasmJsInterop::class)
 package io.github.kotlinmania.gethostname
 
@@ -22,4 +22,4 @@ private val hostnameImpl: () -> String =
             "}",
     )
 
-public actual fun gethostname(): String = hostnameImpl()
+internal actual fun readHostname(): String = hostnameImpl()

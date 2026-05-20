@@ -1,4 +1,4 @@
-// port-lint: source src/lib.rs (platform glue, posix native targets via uname(3))
+// port-lint: ignore platform actual for the Unix cfg branch in src/lib.rs
 package io.github.kotlinmania.gethostname
 
 import kotlinx.cinterop.ExperimentalForeignApi
@@ -12,7 +12,7 @@ import platform.posix.uname
 import platform.posix.utsname
 
 @OptIn(ExperimentalForeignApi::class)
-public actual fun gethostname(): String = memScoped {
+internal actual fun readHostname(): String = memScoped {
     val info = alloc<utsname>()
     if (uname(info.ptr) != 0) {
         val code = errno

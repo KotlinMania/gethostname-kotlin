@@ -123,6 +123,14 @@ kotlin {
         val posixTestPath = "src/posixTest/kotlin"
         val linuxX64Test by getting { kotlin.srcDir(posixTestPath) }
         val macosArm64Test by getting { kotlin.srcDir(posixTestPath) }
+
+        val posixUnameTestPath = "src/posixUnameTest/kotlin"
+        val iosArm64Test by getting { kotlin.srcDir(posixUnameTestPath) }
+        val iosSimulatorArm64Test by getting { kotlin.srcDir(posixUnameTestPath) }
+
+        val androidTestPath = "src/androidTest/kotlin"
+        val androidHostTest by getting { kotlin.srcDir(androidTestPath) }
+        val androidDeviceTest by getting { kotlin.srcDir(androidTestPath) }
     }
     jvmToolchain(21)
 }

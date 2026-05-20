@@ -1,4 +1,4 @@
-// port-lint: source src/lib.rs (platform glue, mingw target via GetComputerNameExW)
+// port-lint: ignore platform actual for the Windows cfg branch in src/lib.rs
 package io.github.kotlinmania.gethostname
 
 import kotlinx.cinterop.ExperimentalForeignApi
@@ -16,7 +16,10 @@ import platform.windows._COMPUTER_NAME_FORMAT
 // The DNS host name of the local computer. If the local computer is a node in a cluster, lpBuffer
 // receives the DNS host name of the local computer, not the name of the cluster virtual server.
 @OptIn(ExperimentalForeignApi::class)
-public actual fun gethostname(): String = memScoped {
+internal actual fun readHostname(): String = readComputerPhysicalDnsHostname()
+
+@OptIn(ExperimentalForeignApi::class)
+private fun readComputerPhysicalDnsHostname(): String = memScoped {
     val bufferSize = alloc<UIntVar>().apply { value = 0u }
 
     // This call always fails with ERROR_MORE_DATA, because we pass NULL to get the required buffer

@@ -2,11 +2,11 @@
   "type": "port",
   "name": "gethostname-kotlin",
   "source": {
-    "path": "tmp/gethostname/src",
+    "path": "tmp/gethostname",
     "lang": "rust"
   },
   "target": {
-    "path": "src/commonMain/kotlin/io/github/kotlinmania/gethostname",
+    "path": "src",
     "lang": "kotlin"
   },
   "checks": {

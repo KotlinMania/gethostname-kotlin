@@ -1,12 +1,9 @@
-// port-lint: source src/lib.rs (platform test glue, JS command/environment comparison)
+// port-lint: ignore JavaScript command helper for the upstream src/lib.rs test
 package io.github.kotlinmania.gethostname
 
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 import kotlin.test.fail
 
-private fun nodeCommandHostname(): String? {
+private fun nodeCommandHostname(): HostnameCommandOutput? {
     if (!(js("typeof process !== 'undefined' && !!(process.versions && process.versions.node)") as Boolean)) {
         return null
     }
@@ -41,10 +38,10 @@ private fun nodeCommandHostname(): String? {
     )
 
     if (!(result.ok as Boolean)) {
-        fail("Failed to get hostname! ${result.stdout}")
+        return HostnameCommandOutput("", result.stdout.toString(), false)
     }
 
-    return result.stdout.toString()
+    return HostnameCommandOutput(result.stdout.toString(), "", true)
 }
 
 private fun browserEnvironmentHostname(): String =
@@ -59,11 +56,5 @@ private fun browserEnvironmentHostname(): String =
         """,
     ).toString()
 
-class JsLibTest {
-    @Test
-    fun gethostnameMatchesSystemHostname() {
-        val hostname = nodeCommandHostname() ?: browserEnvironmentHostname()
-        assertTrue(hostname.isNotEmpty(), "Failed to get hostname: hostname empty?")
-        assertEquals(hostname.trimEnd().lowercase(), gethostname().lowercase())
-    }
-}
+internal actual fun systemHostnameCommand(): HostnameCommandOutput =
+    nodeCommandHostname() ?: HostnameCommandOutput(browserEnvironmentHostname(), "", true)

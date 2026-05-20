@@ -45,4 +45,6 @@ package io.github.kotlinmania.gethostname
  *
  * [GetComputerNameExW]: https://docs.microsoft.com/en-us/windows/desktop/api/sysinfoapi/nf-sysinfoapi-getcomputernameexw
  */
-public expect fun gethostname(): String
+public fun gethostname(): String = readHostname()
+
+internal fun getComputerPhysicalDnsHostname(): String = readHostname()

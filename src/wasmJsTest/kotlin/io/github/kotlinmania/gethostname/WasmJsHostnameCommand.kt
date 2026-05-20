@@ -1,12 +1,7 @@
-// port-lint: source src/lib.rs (platform test glue, Wasm-JS command/environment comparison)
+// port-lint: ignore Wasm-JS command helper for the upstream src/lib.rs test
 @file:OptIn(kotlin.js.ExperimentalWasmJsInterop::class)
 
 package io.github.kotlinmania.gethostname
-
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertTrue
-import kotlin.test.fail
 
 private val nodeCommandHostnameImpl: () -> String? =
     js(
@@ -40,17 +35,13 @@ private val browserEnvironmentHostnameImpl: () -> String =
             "}",
     )
 
-class WasmJsLibTest {
-    @Test
-    fun gethostnameMatchesSystemHostname() {
-        val hostname =
-            try {
-                nodeCommandHostnameImpl()
-            } catch (failure: Throwable) {
-                fail(failure.message ?: "Failed to get hostname!")
-            } ?: browserEnvironmentHostnameImpl()
+internal actual fun systemHostnameCommand(): HostnameCommandOutput {
+    val hostname =
+        try {
+            nodeCommandHostnameImpl()
+        } catch (failure: Throwable) {
+            return HostnameCommandOutput("", failure.message ?: "Failed to get hostname!", false)
+        } ?: browserEnvironmentHostnameImpl()
 
-        assertTrue(hostname.isNotEmpty(), "Failed to get hostname: hostname empty?")
-        assertEquals(hostname.trimEnd().lowercase(), gethostname().lowercase())
-    }
+    return HostnameCommandOutput(hostname, "", true)
 }

@@ -1,15 +1,21 @@
 // port-lint: ignore platform actual for the JavaScript target glue in src/lib.rs
 package io.github.kotlinmania.gethostname
 
-private fun isNodeRequireAvailable(): Boolean =
-    js("typeof require !== 'undefined'") as Boolean
-
-private fun nodeHostname(): String {
-    // Dynamically require the os module at runtime (not compile time).
-    // This avoids webpack trying to bundle it for browser targets.
-    val nodeOs = js("require('os')")
-    return nodeOs.hostname().toString()
-}
+private fun nodeHostnameOrNull(): String? =
+    js(
+        """
+        (() => {
+          try {
+            const rq = (typeof module !== 'undefined' && module.require)
+              ? module.require.bind(module)
+              : (new Function('return typeof require === "function" ? require : null'))();
+            return rq ? rq('os').hostname() : null;
+          } catch (error) {
+            return null;
+          }
+        })()
+        """,
+    )?.toString()
 
 private fun browserHostnameOrNull(): String? =
     if (js("typeof window !== 'undefined' && !!(window.location && window.location.hostname)") as Boolean) {
@@ -20,15 +26,9 @@ private fun browserHostnameOrNull(): String? =
     }
 
 private fun getHostnameImpl(): String {
-    return try {
-        if (isNodeRequireAvailable()) {
-            nodeHostname()
-        } else {
-            browserHostnameOrNull() ?: "localhost"
-        }
-    } catch (_: dynamic) {
-        browserHostnameOrNull() ?: "localhost"
-    }
+    return nodeHostnameOrNull()
+        ?: browserHostnameOrNull()
+        ?: throw RuntimeException("gethostname: host name unavailable in this JavaScript environment")
 }
 
 internal actual fun readHostname(): String = getHostnameImpl()

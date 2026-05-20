@@ -9,10 +9,11 @@ private val nodeCommandHostnameImpl: () -> String? =
             "  if (typeof process === 'undefined' || !(process.versions && process.versions.node)) {\n" +
             "    return null;\n" +
             "  }\n" +
-            "  if (typeof require !== 'function') {\n" +
+            "  const rq = typeof require === 'function' ? require : null;\n" +
+            "  if (!rq) {\n" +
             "    return null;\n" +
             "  }\n" +
-            "  const childProcess = require('child_process');\n" +
+            "  const childProcess = rq('child_process');\n" +
             "  const isWindows = process.platform === 'win32';\n" +
             "  try {\n" +
             "    return childProcess.execFileSync(isWindows ? 'hostname' : 'uname', isWindows ? [] : ['-n'], {\n" +
@@ -25,13 +26,13 @@ private val nodeCommandHostnameImpl: () -> String? =
             "}",
     )
 
-private val browserEnvironmentHostnameImpl: () -> String =
+private val browserEnvironmentHostnameImpl: () -> String? =
     js(
         "() => {\n" +
             "  if (typeof window !== 'undefined' && window.location && window.location.hostname) {\n" +
             "    return window.location.hostname;\n" +
             "  }\n" +
-            "  return 'localhost';\n" +
+            "  return null;\n" +
             "}",
     )
 
@@ -42,6 +43,7 @@ internal actual fun systemHostnameCommand(): HostnameCommandOutput {
         } catch (failure: Throwable) {
             return HostnameCommandOutput("", failure.message ?: "Failed to get hostname!", false)
         } ?: browserEnvironmentHostnameImpl()
+            ?: return HostnameCommandOutput("", "host name unavailable in this Wasm-JS environment", false)
 
     return HostnameCommandOutput(hostname, "", true)
 }

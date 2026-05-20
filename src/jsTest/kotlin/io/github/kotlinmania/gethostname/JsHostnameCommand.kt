@@ -44,17 +44,19 @@ private fun nodeCommandHostname(): HostnameCommandOutput? {
     return HostnameCommandOutput(result.stdout.toString(), "", true)
 }
 
-private fun browserEnvironmentHostname(): String =
+private fun browserEnvironmentHostnameOrNull(): String? =
     js(
         """
         (() => {
           if (typeof window !== 'undefined' && window.location && window.location.hostname) {
             return window.location.hostname;
           }
-          return 'localhost';
+          return null;
         })()
         """,
-    ).toString()
+    )?.toString()
 
 internal actual fun systemHostnameCommand(): HostnameCommandOutput =
-    nodeCommandHostname() ?: HostnameCommandOutput(browserEnvironmentHostname(), "", true)
+    nodeCommandHostname()
+        ?: browserEnvironmentHostnameOrNull()?.let { HostnameCommandOutput(it, "", true) }
+        ?: HostnameCommandOutput("", "host name unavailable in this JavaScript environment", false)

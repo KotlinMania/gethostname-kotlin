@@ -29,7 +29,8 @@ public actual fun gethostname(): String = memScoped {
     )
     check(bufferSize.value > 0u) { "GetComputerNameExW did not provide buffer size" }
 
-    val buffer = allocArray<WCHARVar>((bufferSize.value + 1u).toInt())
+    val capacity = bufferSize.value.toInt()
+    val buffer = allocArray<WCHARVar>(capacity)
     if (GetComputerNameExW(
             _COMPUTER_NAME_FORMAT.ComputerNamePhysicalDnsHostname,
             buffer,
@@ -40,6 +41,9 @@ public actual fun gethostname(): String = memScoped {
             "GetComputerNameExW failed to read hostname.\n" +
                 "        Please report this issue to <https://github.com/KotlinMania/gethostname-kotlin/issues>!",
         )
+    }
+    check(bufferSize.value.toInt() == capacity - 1) {
+        "GetComputerNameExW changed the buffer size unexpectedly"
     }
 
     val total = bufferSize.value.toInt()

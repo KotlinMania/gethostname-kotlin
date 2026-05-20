@@ -19,6 +19,7 @@ plugins {
 group = "io.github.kotlinmania"
 version = "0.1.0-SNAPSHOT"
 
+val androidCompileSdk = 34
 val androidSdkDir: String? =
     providers.environmentVariable("ANDROID_SDK_ROOT").orNull
         ?: providers.environmentVariable("ANDROID_HOME").orNull
@@ -30,6 +31,15 @@ if (androidSdkDir != null && file(androidSdkDir).exists()) {
         localProperties.writeText("sdk.dir=$sdkDirPropertyValue")
     }
 }
+
+val configuredAndroidSdkDir: File? =
+    androidSdkDir?.let { file(it) }
+        ?: rootProject.file("local.properties")
+            .takeIf { it.exists() }
+            ?.readLines()
+            ?.firstOrNull { it.startsWith("sdk.dir=") }
+            ?.substringAfter("sdk.dir=")
+            ?.let { file(it) }
 
 kotlin {
     applyDefaultHierarchyTemplate()
@@ -83,7 +93,7 @@ kotlin {
 
     android {
         namespace = "io.github.kotlinmania.gethostname"
-        compileSdk = 34
+        compileSdk = androidCompileSdk
         minSdk = 24
         withHostTestBuilder {}.configure {}
         withDeviceTestBuilder {
@@ -109,6 +119,10 @@ kotlin {
         val macosArm64Main by getting { kotlin.srcDir(posixMainPath) }
         val iosArm64Main by getting { kotlin.srcDir(posixMainPath) }
         val iosSimulatorArm64Main by getting { kotlin.srcDir(posixMainPath) }
+
+        val posixTestPath = "src/posixTest/kotlin"
+        val linuxX64Test by getting { kotlin.srcDir(posixTestPath) }
+        val macosArm64Test by getting { kotlin.srcDir(posixTestPath) }
     }
     jvmToolchain(21)
 }
@@ -279,8 +293,15 @@ val codeqlCompileJvm = tasks.register<JavaExec>("codeqlCompileJvm") {
                 extractedJars += classesJar
             }
         }
+        val androidJar = configuredAndroidSdkDir
+            ?.resolve("platforms/android-$androidCompileSdk/android.jar")
+            ?.takeIf { it.exists() }
+            ?: throw org.gradle.api.GradleException(
+                "codeqlCompileJvm requires Android platform android-$androidCompileSdk; " +
+                    "set ANDROID_SDK_ROOT/ANDROID_HOME or local.properties sdk.dir",
+            )
         val fullClasspath =
-            (codeqlSourceClasspath.resolve() + extractedJars)
+            (codeqlSourceClasspath.resolve() + extractedJars + androidJar)
                 .joinToString(File.pathSeparator) { it.absolutePath }
         val commonSourceFiles = commonSources.files.toMutableList()
         val sourceFiles = sources.files.toMutableList()

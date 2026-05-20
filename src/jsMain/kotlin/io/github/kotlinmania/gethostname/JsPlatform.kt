@@ -1,4 +1,4 @@
-// port-lint: ignore platform actual for the JavaScript target glue in src/lib.rs
+// port-lint: ignore JavaScript target glue for src/lib.rs
 package io.github.kotlinmania.gethostname
 
 private fun nodeHostnameOrNull(): String? =
@@ -31,4 +31,4 @@ private fun getHostnameImpl(): String {
         ?: throw RuntimeException("gethostname: host name unavailable in this JavaScript environment")
 }
 
-internal actual fun readHostname(): String = getHostnameImpl()
+public actual fun gethostname(): String = getHostnameImpl()

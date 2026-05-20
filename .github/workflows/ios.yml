@@ -30,6 +30,7 @@ jobs:
           ./gradlew
           compileKotlinIosArm64
           compileKotlinIosSimulatorArm64
+          compileKotlinIosX64
           iosSimulatorArm64Test
           assembleGethostnameXCFramework
           -PenableIosSimulatorTests=true

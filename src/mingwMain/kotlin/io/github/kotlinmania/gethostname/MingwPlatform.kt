@@ -1,4 +1,4 @@
-// port-lint: ignore platform actual for the Windows cfg branch in src/lib.rs
+// port-lint: source src/lib.rs
 package io.github.kotlinmania.gethostname
 
 import kotlinx.cinterop.ExperimentalForeignApi
@@ -16,10 +16,10 @@ import platform.windows._COMPUTER_NAME_FORMAT
 // The DNS host name of the local computer. If the local computer is a node in a cluster, lpBuffer
 // receives the DNS host name of the local computer, not the name of the cluster virtual server.
 @OptIn(ExperimentalForeignApi::class)
-internal actual fun readHostname(): String = readComputerPhysicalDnsHostname()
+public actual fun gethostname(): String = getComputerPhysicalDnsHostname()
 
 @OptIn(ExperimentalForeignApi::class)
-private fun readComputerPhysicalDnsHostname(): String = memScoped {
+private fun getComputerPhysicalDnsHostname(): String = memScoped {
     val bufferSize = alloc<UIntVar>().apply { value = 0u }
 
     // This call always fails with ERROR_MORE_DATA, because we pass NULL to get the required buffer
@@ -34,16 +34,14 @@ private fun readComputerPhysicalDnsHostname(): String = memScoped {
 
     val capacity = bufferSize.value.toInt()
     val buffer = allocArray<WCHARVar>(capacity)
-    if (GetComputerNameExW(
-            _COMPUTER_NAME_FORMAT.ComputerNamePhysicalDnsHostname,
-            buffer,
-            bufferSize.ptr,
-        ) == 0
-    ) {
-        throw RuntimeException(
-            "GetComputerNameExW failed to read hostname.\n" +
-                "        Please report this issue to <https://github.com/KotlinMania/gethostname-kotlin/issues>!",
-        )
+    val readSucceeded = GetComputerNameExW(
+        _COMPUTER_NAME_FORMAT.ComputerNamePhysicalDnsHostname,
+        buffer,
+        bufferSize.ptr,
+    ) != 0
+    check(readSucceeded) {
+        "GetComputerNameExW failed to read hostname.\n" +
+            "        Please report this issue to <https://github.com/KotlinMania/gethostname-kotlin/issues>!"
     }
     check(bufferSize.value.toInt() == capacity - 1) {
         "GetComputerNameExW changed the buffer size unexpectedly"

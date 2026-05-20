@@ -1,4 +1,4 @@
-// port-lint: source src/lib.rs
+// port-lint: ignore KMP public facade for the src/lib.rs platform implementations
 package io.github.kotlinmania.gethostname
 
 // Copyright Sebastian Wiesner <sebastian@swsnr.de>
@@ -45,6 +45,4 @@ package io.github.kotlinmania.gethostname
  *
  * [GetComputerNameExW]: https://docs.microsoft.com/en-us/windows/desktop/api/sysinfoapi/nf-sysinfoapi-getcomputernameexw
  */
-public fun gethostname(): String = readHostname()
-
-internal fun getComputerPhysicalDnsHostname(): String = readHostname()
+public expect fun gethostname(): String

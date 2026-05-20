@@ -1,4 +1,4 @@
-// port-lint: ignore Windows command helper for the upstream src/lib.rs test
+// port-lint: source src/lib.rs
 package io.github.kotlinmania.gethostname
 
 import kotlinx.cinterop.ExperimentalForeignApi

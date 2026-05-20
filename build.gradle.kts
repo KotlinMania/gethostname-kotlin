@@ -48,6 +48,16 @@ val androidSdkManager = projectAndroidSdkDir.resolve(
     },
 )
 val androidSdkInstallMarker = projectAndroidSdkDir.resolve(".install-complete")
+val requiredAndroidSdkPackageDirs = listOf(
+    projectAndroidSdkDir.resolve("platform-tools"),
+    projectAndroidSdkDir.resolve("platforms/android-$projectCompileSdk"),
+    projectAndroidSdkDir.resolve("build-tools/$projectAndroidBuildTools"),
+)
+
+fun isProjectAndroidSdkInstalled(): Boolean =
+    androidSdkInstallMarker.exists() &&
+        androidSdkManager.exists() &&
+        requiredAndroidSdkPackageDirs.all { it.exists() }
 
 fun writeAndroidLocalProperties() {
     val sdkDirPropertyValue = projectAndroidSdkDir.absolutePath.replace("\\", "/")
@@ -112,7 +122,7 @@ fun downloadAndroidCommandLineTools() {
 }
 
 fun installProjectAndroidSdk(execOperations: ExecOperations) {
-    if (androidSdkInstallMarker.exists() && androidSdkManager.exists()) {
+    if (isProjectAndroidSdkInstalled()) {
         writeAndroidLocalProperties()
         println("setup-android-sdk: SDK already installed at $projectAndroidSdkDir")
         return
@@ -204,6 +214,12 @@ kotlin {
             xcf.add(this)
         }
     }
+    iosX64 {
+        binaries.framework {
+            baseName = "Gethostname"
+            xcf.add(this)
+        }
+    }
     js {
         browser()
         nodejs()
@@ -247,6 +263,7 @@ kotlin {
         val macosArm64Main by getting { kotlin.srcDir(posixMainPath) }
         val iosArm64Main by getting { kotlin.srcDir(posixMainPath) }
         val iosSimulatorArm64Main by getting { kotlin.srcDir(posixMainPath) }
+        val iosX64Main by getting { kotlin.srcDir(posixMainPath) }
 
         val posixTestPath = "src/posixTest/kotlin"
         val linuxX64Test by getting { kotlin.srcDir(posixTestPath) }
@@ -255,6 +272,7 @@ kotlin {
         val posixUnameTestPath = "src/posixUnameTest/kotlin"
         val iosArm64Test by getting { kotlin.srcDir(posixUnameTestPath) }
         val iosSimulatorArm64Test by getting { kotlin.srcDir(posixUnameTestPath) }
+        val iosX64Test by getting { kotlin.srcDir(posixUnameTestPath) }
 
         val androidTestPath = "src/androidTest/kotlin"
         val androidHostTest by getting { kotlin.srcDir(androidTestPath) }
@@ -494,4 +512,48 @@ tasks.register("test") {
     )
 
     dependsOn(defaultTestTasks.mapNotNull { taskName -> tasks.findByName(taskName) })
+}
+
+val fullTargetBuildTaskNames = setOf(
+    "compileAndroidMain",
+    "compileAndroidHostTest",
+    "compileAndroidDeviceTest",
+    "assembleAndroidMain",
+    "assembleUnitTest",
+    "assembleAndroidTest",
+    "assembleAndroidDeviceTest",
+    "jsMainClasses",
+    "jsTestClasses",
+    "jsBrowserTest",
+    "jsNodeTest",
+    "jsTest",
+    "wasmJsMainClasses",
+    "wasmJsTestClasses",
+    "wasmJsBrowserTest",
+    "wasmJsNodeTest",
+    "wasmJsTest",
+    "macosArm64Binaries",
+    "macosArm64TestBinaries",
+    "iosArm64Binaries",
+    "iosArm64TestBinaries",
+    "iosSimulatorArm64Binaries",
+    "iosSimulatorArm64TestBinaries",
+    "iosX64Binaries",
+    "iosX64TestBinaries",
+    "linuxX64Binaries",
+    "linuxX64TestBinaries",
+    "mingwX64Binaries",
+    "mingwX64TestBinaries",
+    "macosArm64Test",
+    "linuxX64Test",
+    "mingwX64Test",
+    "assembleGethostnameXCFramework",
+    "assembleGethostnameDebugXCFramework",
+    "assembleGethostnameReleaseXCFramework",
+)
+
+afterEvaluate {
+    tasks.named("build") {
+        dependsOn(fullTargetBuildTaskNames)
+    }
 }

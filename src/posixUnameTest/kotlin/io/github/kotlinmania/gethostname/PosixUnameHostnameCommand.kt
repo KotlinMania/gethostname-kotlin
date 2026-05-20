@@ -1,4 +1,4 @@
-// port-lint: ignore POSIX uname helper for targets without process execution
+// port-lint: source src/lib.rs
 package io.github.kotlinmania.gethostname
 
 import kotlinx.cinterop.ExperimentalForeignApi

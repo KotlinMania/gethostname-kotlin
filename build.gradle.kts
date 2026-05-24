@@ -211,12 +211,14 @@ kotlin {
     iosSimulatorArm64 {
         binaries.framework {
             baseName = "Gethostname"
+            isStatic = true
             xcf.add(this)
         }
     }
     iosX64 {
         binaries.framework {
             baseName = "Gethostname"
+            isStatic = true
             xcf.add(this)
         }
     }

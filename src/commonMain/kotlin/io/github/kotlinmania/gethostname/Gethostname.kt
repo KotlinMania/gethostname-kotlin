@@ -25,9 +25,7 @@ package io.github.kotlinmania.gethostname
  * ```
  *
  * [ghn]: http://pubs.opengroup.org/onlinepubs/9699919799/functions/gethostname.html
- */
-
-/**
+ *
  * Get the standard host name for the current machine.
  *
  * On Unix call the platform's `uname()` to obtain the node name; this matches the node name

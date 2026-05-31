@@ -19,35 +19,37 @@ import platform.windows._COMPUTER_NAME_FORMAT
 public actual fun gethostname(): String = getComputerPhysicalDnsHostname()
 
 @OptIn(ExperimentalForeignApi::class)
-private fun getComputerPhysicalDnsHostname(): String = memScoped {
-    val bufferSize = alloc<UIntVar>().apply { value = 0u }
+private fun getComputerPhysicalDnsHostname(): String =
+    memScoped {
+        val bufferSize = alloc<UIntVar>().apply { value = 0u }
 
-    // This call always fails with ERROR_MORE_DATA, because we pass NULL to get the required buffer
-    // size. GetComputerNameExW then fills bufferSize with the size of the host name string plus a
-    // trailing zero word.
-    GetComputerNameExW(
-        _COMPUTER_NAME_FORMAT.ComputerNamePhysicalDnsHostname,
-        null,
-        bufferSize.ptr,
-    )
-    check(bufferSize.value > 0u) { "GetComputerNameExW did not provide buffer size" }
+        // This call always fails with ERROR_MORE_DATA, because we pass NULL to get the required buffer
+        // size. GetComputerNameExW then fills bufferSize with the size of the host name string plus a
+        // trailing zero word.
+        GetComputerNameExW(
+            _COMPUTER_NAME_FORMAT.ComputerNamePhysicalDnsHostname,
+            null,
+            bufferSize.ptr,
+        )
+        check(bufferSize.value > 0u) { "GetComputerNameExW did not provide buffer size" }
 
-    val capacity = bufferSize.value.toInt()
-    val buffer = allocArray<WCHARVar>(capacity)
-    val readSucceeded = GetComputerNameExW(
-        _COMPUTER_NAME_FORMAT.ComputerNamePhysicalDnsHostname,
-        buffer,
-        bufferSize.ptr,
-    ) != 0
-    check(readSucceeded) {
-        "GetComputerNameExW failed to read hostname.\n" +
-            "        Please report this issue to <https://github.com/KotlinMania/gethostname-kotlin/issues>!"
+        val capacity = bufferSize.value.toInt()
+        val buffer = allocArray<WCHARVar>(capacity)
+        val readSucceeded =
+            GetComputerNameExW(
+                _COMPUTER_NAME_FORMAT.ComputerNamePhysicalDnsHostname,
+                buffer,
+                bufferSize.ptr,
+            ) != 0
+        check(readSucceeded) {
+            "GetComputerNameExW failed to read hostname.\n" +
+                "        Please report this issue to <https://github.com/KotlinMania/gethostname-kotlin/issues>!"
+        }
+        check(bufferSize.value.toInt() == capacity - 1) {
+            "GetComputerNameExW changed the buffer size unexpectedly"
+        }
+
+        val total = bufferSize.value.toInt()
+        val chars = CharArray(total) { i -> buffer[i].toInt().toChar() }
+        chars.concatToString()
     }
-    check(bufferSize.value.toInt() == capacity - 1) {
-        "GetComputerNameExW changed the buffer size unexpectedly"
-    }
-
-    val total = bufferSize.value.toInt()
-    val chars = CharArray(total) { i -> buffer[i].toInt().toChar() }
-    chars.concatToString()
-}

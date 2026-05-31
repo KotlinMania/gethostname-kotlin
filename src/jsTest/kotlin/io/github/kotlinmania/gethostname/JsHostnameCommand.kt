@@ -1,15 +1,14 @@
 // port-lint: ignore JavaScript command helper for the upstream src/lib.rs test
 package io.github.kotlinmania.gethostname
 
-import kotlin.test.fail
-
 private fun nodeCommandHostname(): HostnameCommandOutput? {
     if (!(js("typeof process !== 'undefined' && !!(process.versions && process.versions.node)") as Boolean)) {
         return null
     }
 
-    val result = js(
-        """
+    val result =
+        js(
+            """
         (() => {
           const rq = (typeof module !== 'undefined' && module.require)
             ? module.require.bind(module)
@@ -35,7 +34,7 @@ private fun nodeCommandHostname(): HostnameCommandOutput? {
           }
         })()
         """,
-    )
+        )
 
     if (!(result.ok as Boolean)) {
         return HostnameCommandOutput("", result.stdout.toString(), false)

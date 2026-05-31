@@ -25,10 +25,9 @@ private fun browserHostnameOrNull(): String? =
         null
     }
 
-private fun getHostnameImpl(): String {
-    return nodeHostnameOrNull()
+private fun getHostnameImpl(): String =
+    nodeHostnameOrNull()
         ?: browserHostnameOrNull()
         ?: throw RuntimeException("gethostname: host name unavailable in this JavaScript environment")
-}
 
 public actual fun gethostname(): String = getHostnameImpl()

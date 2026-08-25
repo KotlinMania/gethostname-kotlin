@@ -1,4 +1,3 @@
-// port-lint: ignore Wasm-JS target glue for src/lib.rs
 @file:OptIn(kotlin.js.ExperimentalWasmJsInterop::class)
 
 package io.github.kotlinmania.gethostname

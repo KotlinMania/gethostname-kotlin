@@ -1,4 +1,3 @@
-// port-lint: ignore - Wasm-WASI actual for src/lib.rs; WASI preview1 has no hostname syscall.
 package io.github.kotlinmania.gethostname
 
 // WASI preview1 exposes neither gethostname(2) nor uname(2), and provides no

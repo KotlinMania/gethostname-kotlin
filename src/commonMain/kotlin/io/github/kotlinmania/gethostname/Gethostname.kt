@@ -1,4 +1,4 @@
-// port-lint: ignore KMP public facade for the src/lib.rs platform implementations
+// port-lint: source lib.rs
 package io.github.kotlinmania.gethostname
 
 // Copyright Sebastian Wiesner <sebastian@swsnr.de>

@@ -1,4 +1,3 @@
-// port-lint: ignore JavaScript target glue for src/lib.rs
 package io.github.kotlinmania.gethostname
 
 private fun nodeHostnameOrNull(): String? =

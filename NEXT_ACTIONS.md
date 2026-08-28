@@ -29,7 +29,7 @@ Every matched file is listed below with function and type symbol parity.
 
 ### 1. lib
 
-- **Target:** `gethostname.Gethostname`
+- **Target:** `gethostname.Gethostname [PROVENANCE-FALLBACK]`
 - **Similarity:** 0.22
 - **Dependents:** 0
 - **Priority Score:** 20307.8
@@ -38,6 +38,11 @@ Every matched file is listed below with function and type symbol parity.
 - **Types:** 0/0 matched (target 1)
 - **Missing types:** _none_
 - **Tests:** 1/1 matched
+- **Provenance warning:** port-lint provenance header matched only after fallback normalization: `lib.rs` vs expected `lib.rs`
+- **Provenance warning:** port-lint provenance header matched only after fallback normalization: `tests:lib.rs` vs expected `lib.rs`
+- **Proposed provenance header:** `// port-lint: source lib.rs` (current: `// port-lint: source lib.rs`)
+- **Proposed provenance header:** `// port-lint: tests lib.rs` (current: `// port-lint: tests lib.rs`)
+- **Lint issues:** 2
 
 ## Success Criteria
 

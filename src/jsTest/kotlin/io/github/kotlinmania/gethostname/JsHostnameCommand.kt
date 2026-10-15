@@ -1,4 +1,3 @@
-// port-lint: ignore JavaScript command helper for the upstream src/lib.rs test
 package io.github.kotlinmania.gethostname
 
 private fun nodeCommandHostname(): HostnameCommandOutput? {
@@ -10,13 +9,26 @@ private fun nodeCommandHostname(): HostnameCommandOutput? {
         js(
             """
         (() => {
-          const rq = (typeof module !== 'undefined' && module.require)
-            ? module.require.bind(module)
-            : (new Function('return typeof require === "function" ? require : null'))();
-          if (!rq) {
+          let childProcess = null;
+          try {
+            if (typeof process.getBuiltinModule === 'function') {
+              childProcess = process.getBuiltinModule('node:child_process') || process.getBuiltinModule('child_process');
+            }
+            if (!childProcess && process.mainModule && typeof process.mainModule.require === 'function') {
+              childProcess = process.mainModule.require('child_process');
+            }
+          } catch (e) {}
+          if (!childProcess) {
+            try {
+              const rq = (typeof module !== 'undefined' && module.require)
+                ? module.require.bind(module)
+                : (new Function('return typeof require === "function" ? require : null'))();
+              if (rq) childProcess = rq('child_process');
+            } catch (e) {}
+          }
+          if (!childProcess) {
             return { ok: false, stdout: 'failed to get hostname' };
           }
-          const childProcess = rq('child_process');
           const isWindows = process.platform === 'win32';
           try {
             return {

@@ -1,5 +1,7 @@
 package io.github.kotlinmania.gethostname
 
+import java.net.InetAddress
+
 public actual fun gethostname(): String {
     val isWindows = System.getProperty("os.name").startsWith("Windows", ignoreCase = true)
     if (isWindows) {
@@ -8,7 +10,7 @@ public actual fun gethostname(): String {
             return env
         }
         return try {
-            java.net.InetAddress.getLocalHost().hostName
+            InetAddress.getLocalHost().hostName
         } catch (_: Throwable) {
             val process = ProcessBuilder("hostname").redirectErrorStream(true).start()
             val output = process.inputStream.bufferedReader().use { it.readText() }
@@ -24,14 +26,14 @@ public actual fun gethostname(): String {
         if (status == 0 && output.isNotBlank()) {
             output.trimEnd()
         } else {
-            java.net.InetAddress.getLocalHost().hostName
+            InetAddress.getLocalHost().hostName
         }
     } catch (_: Throwable) {
         val env = System.getenv("HOSTNAME")
         if (!env.isNullOrBlank()) {
             env
         } else {
-            java.net.InetAddress.getLocalHost().hostName
+            InetAddress.getLocalHost().hostName
         }
     }
 }

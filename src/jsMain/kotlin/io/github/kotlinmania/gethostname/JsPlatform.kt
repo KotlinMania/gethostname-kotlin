@@ -5,6 +5,16 @@ private fun nodeHostnameOrNull(): String? =
         """
         (() => {
           try {
+            if (typeof process !== 'undefined') {
+              if (typeof process.getBuiltinModule === 'function') {
+                const mod = process.getBuiltinModule('node:os') || process.getBuiltinModule('os');
+                if (mod && typeof mod.hostname === 'function') return mod.hostname();
+              }
+              if (process.mainModule && typeof process.mainModule.require === 'function') {
+                const mod = process.mainModule.require('os');
+                if (mod && typeof mod.hostname === 'function') return mod.hostname();
+              }
+            }
             const rq = (typeof module !== 'undefined' && module.require)
               ? module.require.bind(module)
               : (new Function('return typeof require === "function" ? require : null'))();

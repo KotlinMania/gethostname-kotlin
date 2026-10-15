@@ -1,4 +1,3 @@
-// port-lint: ignore Wasm-JS command helper for the upstream src/lib.rs test
 @file:OptIn(kotlin.js.ExperimentalWasmJsInterop::class)
 
 package io.github.kotlinmania.gethostname
@@ -9,11 +8,25 @@ private val nodeCommandHostnameImpl: () -> String? =
             "  if (typeof process === 'undefined' || !(process.versions && process.versions.node)) {\n" +
             "    return null;\n" +
             "  }\n" +
-            "  const rq = typeof require === 'function' ? require : null;\n" +
-            "  if (!rq) {\n" +
+            "  let childProcess = null;\n" +
+            "  try {\n" +
+            "    if (typeof process.getBuiltinModule === 'function') {\n" +
+            "      childProcess = process.getBuiltinModule('node:child_process') || process.getBuiltinModule('child_process');\n" +
+            "    }\n" +
+            "    if (!childProcess && process.mainModule && typeof process.mainModule.require === 'function') {\n" +
+            "      childProcess = process.mainModule.require('child_process');\n" +
+            "    }\n" +
+            "  } catch (e) {}\n" +
+            "  if (!childProcess) {\n" +
+            "    try {\n" +
+            "      const fn = new Function('return typeof require === \"function\" ? require : null');\n" +
+            "      const rq = (typeof module !== 'undefined' && module.require) ? module.require.bind(module) : fn();\n" +
+            "      if (rq) childProcess = rq('child_process');\n" +
+            "    } catch (e) {}\n" +
+            "  }\n" +
+            "  if (!childProcess) {\n" +
             "    return null;\n" +
             "  }\n" +
-            "  const childProcess = rq('child_process');\n" +
             "  const isWindows = process.platform === 'win32';\n" +
             "  try {\n" +
             "    return childProcess.execFileSync(isWindows ? 'hostname' : 'uname', isWindows ? [] : ['-n'], {\n" +

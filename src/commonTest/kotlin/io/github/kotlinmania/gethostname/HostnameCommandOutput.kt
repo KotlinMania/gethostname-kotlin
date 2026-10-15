@@ -1,4 +1,3 @@
-// port-lint: ignore KMP expect declaration for platform command-backed hostname tests
 package io.github.kotlinmania.gethostname
 
 internal data class HostnameCommandOutput(
